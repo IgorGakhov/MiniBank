@@ -1,0 +1,23 @@
+{
+    "typeCheckingMode": "strict",
+    "include": ["."],
+    "exclude": ["venv"],
+    "reportMissingTypeStubs": true,
+    "reportMissingParameterType": true,
+    "reportMissingReturnType": true,
+    "reportOptionalSubscript": true,
+    "reportOptionalMemberAccess": true,
+    "reportOptionalOperand": true,
+    "reportGeneralTypeIssues": true,
+    "reportUnnecessaryIsInstance": true,
+    "reportUnusedImport": true,
+    "reportUnusedFunction": true,
+    "reportUnusedClass": true,
+    "reportUnusedVariable": true,
+    "reportUnusedCoroutine": true,
+    "reportUnnecessaryTypeIgnoreComment": true,
+    "reportPrivateUsage": true,
+    "pythonVersion": "3.11",
+    "venvPath": "./venv",
+    "venv": "venv"
+  }

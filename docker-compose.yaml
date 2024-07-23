@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: minibank_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "80:8000"
+    depends_on:
+      - database
+      - cache
+
+  database:
+    container_name: minibank_db
+    image: postgres:14
+    ports:
+      - 54321:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: minibank
+
+  cache:
+    container_name: minibank_cache
+    restart: unless-stopped
+    image: redis:7.2-alpine
+    expose:
+      - "6379"

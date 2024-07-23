@@ -1,0 +1,15 @@
+# Environments
+.env
+*venv
+
+# Cache
+__pycache__
+
+# pyenv
+.python-version
+
+# Databases
+data
+
+# OS
+.DS_Store
