@@ -25,4 +25,4 @@ class Remittance(AbstractRemittance):
     message = Column(Text)
     date_create = Column(DateTime, default=datetime.utcnow)  # type: ignore
 
-    currency = relationship("Currencies")
+    currency = relationship("Currency")

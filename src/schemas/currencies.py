@@ -10,6 +10,7 @@ class CurrencyCreate(BaseModel):
 
 
 class CurrencyPut(BaseModel):
+    id: int
     designation: str
     usd_buy_price: float
     usd_sale_price: float

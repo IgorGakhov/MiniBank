@@ -18,13 +18,13 @@ engine: AsyncEngine = create_async_engine(
     echo=True,
     poolclass=NullPool,
 )
-async_session: async_sessionmaker[AsyncSession] = async_sessionmaker(
+async_session_maker: async_sessionmaker[AsyncSession] = async_sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False,
 )
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, Any]:
-    async with async_session() as session:
+    async with async_session_maker() as session:
         yield session
 
 

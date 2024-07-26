@@ -37,7 +37,7 @@ class IndividualAccount(AbstractAccount):
     date_modify = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # type: ignore
     date_last_use = Column(DateTime)
 
-    currency = relationship("Currencies")
+    currency = relationship("Currency")
     owner_id = Column(BigInteger, ForeignKey("individual_customers.id"))
     owner = relationship("IndividualCustomer", back_populates="accounts")
 
@@ -52,6 +52,6 @@ class BusinessAccount(AbstractAccount):
     balance = Column(Numeric(2), default=0)
     currency_id = Column(Integer, ForeignKey("currencies.id"))
 
-    currency = relationship("Currencies")
+    currency = relationship("Currency")
     owner_id = Column(BigInteger, ForeignKey("business_customers.id"))
     owner = relationship("BusinessCustomer", back_populates="accounts")
