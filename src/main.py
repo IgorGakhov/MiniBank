@@ -2,10 +2,10 @@ from fastapi import FastAPI, APIRouter
 from fastapi.responses import RedirectResponse
 import uvicorn
 
-from .api.customers.views import router as router_customers
-from .api.transfers.views import router as router_transfers
-from .api.accounts.views import router as router_accounts
-from .api.currencies.views import router as router_currencies
+from .domain.customers import router as router_customers
+from .domain.remittances import router as router_transfers
+from .domain.accounts import router as router_accounts
+from .domain.currencies import router as router_currencies
 
 
 app = FastAPI(title="MiniBank")
