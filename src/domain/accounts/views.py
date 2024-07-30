@@ -7,6 +7,7 @@ from .schemas import (
     IndividualAccountPatch,
     BusinessAccountPatch,
 )
+from .services import IndividualAccountsService, CardData
 
 
 router = APIRouter(prefix="/accounts", tags=["Банковские счета"])
@@ -21,8 +22,7 @@ async def get_individual_accounts(
     limit: int = Query(20, gt=0, le=100, description="Лимит объектов на странице"),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        objs = await uow.individual_accounts_repo.list(limit, page - 1)
+    objs = await IndividualAccountsService().get_all(limit, page - 1, uow)
     return objs
 
 
@@ -34,8 +34,7 @@ async def get_individual_account_by_id(
     account_id: int,
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.individual_accounts_repo.get_by_id(account_id)
+    obj = await IndividualAccountsService().get_by_id(account_id, uow)
     return obj
 
 
@@ -48,9 +47,9 @@ async def post_individual_account(
     request: IndividualAccountCreate = Body(),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.individual_accounts_repo.add(dict(request))
-        await uow.commit()
+    card_data = await CardData.generate_card_data()
+    account = {**dict(request), **card_data}
+    obj = await IndividualAccountsService().add(account, uow)
     return obj
 
 
@@ -65,9 +64,7 @@ async def patch_individual_account(
     account_id = request.id
     request = dict(request)
     del request[account_id]
-    async with uow:
-        obj = await uow.individual_accounts_repo.update(account_id, dict(request))
-        await uow.commit()
+    obj = await IndividualAccountsService().patch(account_id, request, uow)
     return obj
 
 
@@ -79,9 +76,7 @@ async def delete_individual_account(
     account_id: int,
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        await uow.individual_accounts_repo.delete(account_id)
-        await uow.commit()
+    await IndividualAccountsService().delete(account_id, uow)
 
 
 @router.get(

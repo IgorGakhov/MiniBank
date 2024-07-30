@@ -7,6 +7,7 @@ from .enums import AccountTypesEnum
 
 
 class IndividualAccountCreate(BaseModel):
+    owner_id: int
     currency_id: int
     type: AccountTypesEnum
 
@@ -38,6 +39,7 @@ class IndividualAccountsList(BaseModel):
 
 
 class BusinessAccountCreate(BaseModel):
+    owner_id: int
     currency_id: int
 
 
