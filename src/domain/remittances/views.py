@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 
 from src.domain.base.unit_of_work import AbstractUnitOfWork, SqlAlchemyUnitOfWork
+from .services import RemittancesService
 
 
 router = APIRouter(prefix="/transfers", tags=["Транзакции"])
@@ -15,8 +16,7 @@ async def get_transfers(
     limit: int = Query(20, gt=0, le=100, description="Лимит объектов на странице"),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        objs = await uow.remittances_repo.list(limit, page - 1)
+    objs = await RemittancesService().get_all(limit, page - 1, uow)
     return objs
 
 
@@ -28,6 +28,5 @@ async def get_transfer_by_id(
     remittance_id: int,
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.remittances_repo.get_by_id(remittance_id)
+    obj = await RemittancesService().get_by_id(remittance_id, uow)
     return obj

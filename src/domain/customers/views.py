@@ -7,6 +7,7 @@ from .schemas import (
     IndividualCustomerPatch,
     BusinessCustomerPatch,
 )
+from .services import IndividualCustomersService, BusinessCustomersService
 
 
 router = APIRouter(prefix="/customers", tags=["Клиенты"])
@@ -21,8 +22,7 @@ async def get_individual_customers(
     limit: int = Query(20, gt=0, le=100, description="Лимит объектов на странице"),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        objs = await uow.individual_customers_repo.list(limit, page - 1)
+    objs = await IndividualCustomersService().get_all(limit, page - 1, uow)
     return objs
 
 
@@ -34,8 +34,7 @@ async def get_individual_customer_by_id(
     customer_id: int,
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.individual_customers_repo.get_by_id(customer_id)
+    obj = await IndividualCustomersService().get_by_id(customer_id, uow)
     return obj
 
 
@@ -48,9 +47,7 @@ async def post_individual_customer(
     request: IndividualCustomerCreate = Body(),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.individual_customers_repo.add(dict(request))
-        await uow.commit()
+    obj = await IndividualCustomersService().add(dict(request), uow)
     return obj
 
 
@@ -62,12 +59,10 @@ async def patch_individual_customer(
     request: IndividualCustomerPatch = Body(),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    account_id = request.id
+    customer_id = request.id
     request = dict(request)
-    del request[account_id]
-    async with uow:
-        obj = await uow.individual_customers_repo.update(account_id, dict(request))
-        await uow.commit()
+    del request[customer_id]
+    obj = await IndividualCustomersService().patch(customer_id, request, uow)
     return obj
 
 
@@ -79,9 +74,7 @@ async def delete_individual_customer(
     customer_id: int,
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        await uow.individual_customers_repo.delete(customer_id)
-        await uow.commit()
+    await IndividualCustomersService().delete(customer_id, uow)
 
 
 @router.get(
@@ -93,8 +86,7 @@ async def get_business_customers(
     limit: int = Query(20, gt=0, le=100, description="Лимит объектов на странице"),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        objs = await uow.business_customers_repo.list(limit, page - 1)
+    objs = await BusinessCustomersService().get_all(limit, page - 1, uow)
     return objs
 
 
@@ -106,8 +98,7 @@ async def get_business_customer_by_id(
     customer_id: int,
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.business_customers_repo.get_by_id(customer_id)
+    obj = await BusinessCustomersService().get_by_id(customer_id, uow)
     return obj
 
 
@@ -120,9 +111,7 @@ async def post_business_customer(
     request: BusinessCustomerCreate = Body(),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.business_customers_repo.add(dict(request))
-        await uow.commit()
+    obj = await BusinessCustomersService().add(dict(request), uow)
     return obj
 
 
@@ -134,12 +123,10 @@ async def patch_business_customer(
     request: BusinessCustomerPatch = Body(),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    account_id = request.id
+    customer_id = request.id
     request = dict(request)
-    del request[account_id]
-    async with uow:
-        obj = await uow.business_customers_repo.update(account_id, dict(request))
-        await uow.commit()
+    del request[customer_id]
+    obj = await BusinessCustomersService().patch(customer_id, request, uow)
     return obj
 
 
@@ -151,6 +138,4 @@ async def delete_business_customer(
     customer_id: int,
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        await uow.business_customers_repo.delete(customer_id)
-        await uow.commit()
+    await BusinessCustomersService().delete(customer_id, uow)

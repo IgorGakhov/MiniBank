@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Body, Query, status
 
 from src.domain.base.unit_of_work import AbstractUnitOfWork, SqlAlchemyUnitOfWork
 from .schemas import CurrencyCreate, CurrencyPut
+from .services import CurrenciesService
 
 
 router = APIRouter(prefix="/currencies", tags=["Валюты"])
@@ -28,8 +29,7 @@ async def get_currencies(
     limit: int = Query(20, gt=0, le=100, description="Лимит объектов на странице"),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        objs = await uow.currencies_repo.list(limit, page - 1)
+    objs = await CurrenciesService().get_all(limit, page - 1, uow)
     return objs
 
 
@@ -41,8 +41,7 @@ async def get_currency_by_id(
     currency_id: int,
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.currencies_repo.get_by_id(currency_id)
+    obj = await CurrenciesService().get_by_id(currency_id, uow)
     return obj
 
 
@@ -55,9 +54,7 @@ async def post_currency(
     request: CurrencyCreate = Body(),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.currencies_repo.add(dict(request))
-        await uow.commit()
+    obj = await CurrenciesService().add(dict(request), uow)
     return obj
 
 
@@ -69,9 +66,8 @@ async def put_currency(
     request: CurrencyPut = Body(),
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        obj = await uow.currencies_repo.update(request.id, dict(request))
-        await uow.commit()
+    currency_id = request.id
+    obj = await CurrenciesService().put(currency_id, request, uow)
     return obj
 
 
@@ -84,6 +80,4 @@ async def delete_currency(
     currency_id: int,
     uow: AbstractUnitOfWork = Depends(SqlAlchemyUnitOfWork),
 ):
-    async with uow:
-        await uow.currencies_repo.delete(currency_id)
-        await uow.commit()
+    await CurrenciesService().delete(currency_id, uow)

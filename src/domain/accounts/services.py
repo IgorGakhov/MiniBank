@@ -56,6 +56,56 @@ class IndividualAccountsService:
             await uow.commit()
 
 
+class BusinessAccountsService:
+
+    async def get_all(
+        self,
+        limit: int,
+        offset: int,
+        uow: AbstractUnitOfWork,
+    ):
+        async with uow:
+            objs = await uow.business_accounts_repo.list(limit, offset)
+        return objs
+
+    async def get_by_id(
+        account_id: int,
+        uow: AbstractUnitOfWork,
+    ):
+        async with uow:
+            obj = await uow.business_accounts_repo.get_by_id(account_id)
+        return obj
+
+    async def add(
+        self,
+        account: Dict,
+        uow: AbstractUnitOfWork,
+    ):
+        async with uow:
+            obj = await uow.business_accounts_repo.add(account)
+            await uow.commit()
+        return obj
+
+    async def patch(
+        self,
+        account_id: int,
+        data: Any,
+        uow: AbstractUnitOfWork,
+    ):
+        async with uow:
+            obj = await uow.individual_accounts_repo.update(account_id, data)
+            await uow.commit()
+        return obj
+
+    async def delete(
+        account_id: int,
+        uow: AbstractUnitOfWork,
+    ):
+        async with uow:
+            await uow.business_accounts_repo.delete(account_id)
+            await uow.commit()
+
+
 class CardData:
 
     @staticmethod
